@@ -1,7 +1,7 @@
 
 import pandas as pd
 import os
-from data_cleaning.helper_functions import report, drop_nan_cols, Transformations
+from data_cleaning.helper_functions import report, drop_nan_cols, Transformations, save_table
 
 """
 Uncomment the code below to extract descriptive features from the flare and non-flare samples
@@ -14,17 +14,31 @@ Uncomment the code below to extract descriptive features from the flare and non-
 # save_path = os.path.join(os.getcwd(),"data","extracted_features.csv")
 # extracted_data.to_csv(save_path,index=False,header=True)
 
+"""
+Load extracted features from parition 1
+"""
 extracted_features = pd.read_csv(os.path.join(os.getcwd(),"data","extracted_features.csv"))
 
-# print(extracted_features.head(5))
-# print(extracted_features['FLARE_TYPE'].value_counts(normalize=True)*100)
 
+"""
+Generate Summary table using extracted features
+"""
 summary_table = report(extracted_features)
 drop_nan_cols(0.05, summary_table, extracted_features)
 
+"""
+Perform transformation on the extracted features based on summary table stats
+"""
 t = Transformations(summary_table, extracted_features)
 small_range = t.get_features_with_small_outliers()
 large_range = t.get_features_with_large_outliers()
 t.log_transformation(large_range)
 t.z_score_normalisation(small_range)
 
+"""
+Save cleaned tables
+"""
+save_path_1 = os.path.join(os.getcwd(),"data","extracted_features_cleaned.csv")
+save_path_2 = os.path.join(os.getcwd(),"data","summary_table.csv")
+save_table(save_path_1, extracted_features)
+save_table(save_path_2, summary_table)

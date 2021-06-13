@@ -141,6 +141,8 @@ def calculate_descriptive_features(data):
     Calculates descriptive statistics on the features across all samples from both FL and NF
     :param data: Dataframe on which descriptive statistics are computed
     :returns Returns the computed statistics
+
+    :todo Add more descriptive stats such as skewness and kurtosis
     """
     variates_to_calc_on = list(data.columns[1:25])
 
@@ -213,6 +215,8 @@ def process_partition(partition_location, data):
     Concatenates descriptive statistics computed on flare and non-flare samples
     :param partition_location: Location of NF samples
     :param data: Empty dataframe with all the columns generated using generate_features()
+
+    :todo: Construct function to parse all the paritions at once
     """
     abt_header = ['FLARE_TYPE'] + get_features(data)
 
@@ -310,6 +314,16 @@ def report(data):
 
 
 def drop_nan_cols(threshold, summary_table, data):
+    """
+    Drops nan values in place from both summary table and extracted features based on threshold passed in the funciotn call.
+
+    :param threshold: Threshold expressed as percentage to drop nan values
+    :param summary_table: Dataframe constituting the descriptive stats computed for every column in the extract features dataframe.
+    :param data: Extracted feature dataframe
+
+
+    :todo Construct data cleaning pipeline
+    """
     cols = []
     for col in data.columns:
         if data[col].isna().sum() > threshold * data.shape[0]:
@@ -332,7 +346,7 @@ class Transformations:
     :type summary_table: pandas.core.frame.DataFrame
     :type data: pandas.core.frame.DataFrame
 
-
+    :todo Explore more tranformations
 
     """
 
@@ -441,3 +455,4 @@ class Transformations:
         :return: Histogram with arguments passed in the function call
         """
         sns.histplot(ax=ax, data=data, x=col, bins=bins);
+

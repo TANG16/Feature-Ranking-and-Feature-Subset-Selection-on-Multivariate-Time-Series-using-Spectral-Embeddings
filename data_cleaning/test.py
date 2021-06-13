@@ -5,6 +5,10 @@ import pandas as pd
 
 path = os.getcwd()
 
+
+"""
+Testing helper functions
+"""
 sample = Sample("FL", "M1.0@265_Primary_ar115_s2010-08-06T06_36_00_e2010-08-06T18_24_00.csv")
 print("File stats")
 print("----------")
