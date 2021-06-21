@@ -9,8 +9,8 @@ import os
 from tqdm import tqdm
 
 plt.style.use('ggplot')
-plt.style.use('ggplot')
-os.chdir('..')
+
+# os.chdir(os.path.pardir)
 path = os.getcwd()
 
 
@@ -18,7 +18,7 @@ class Sample:
     """
     A class to parse files and display basic information of the file.
 
-    Attributes
+    Parameters
     ----------
     :param flare_type: "FL" or "NF"
     :type flare_type str
@@ -173,7 +173,7 @@ def process_flare_data(partition_location, final_data_fl):
     i = 0
     print("Processing Flare files")
 
-    for file in tqdm(os.listdir(path_FL)[:10]):
+    for file in tqdm(os.listdir(path_FL)):
         sample = Sample("FL", file)
         data = sample.get_data()
         features = calculate_descriptive_features(data)
@@ -198,7 +198,7 @@ def process_non_flare_data(partition_location, final_data_nf):
     path_NF = os.path.join(partition_location, "NF")
     print('Processing Non-Flare files')
 
-    for file in tqdm(os.listdir(path_NF)[:10]):
+    for file in tqdm(os.listdir(path_NF)):
         sample = Sample("NF", file)
         data = sample.get_data()
         features = calculate_descriptive_features(data)
@@ -234,19 +234,21 @@ def process_partition(partition_location, data):
     return table
 
 
-def save_table(path, table, index=False, header=True):
+def save_table(path, table, table_name, index=False, header=True):
     """
     Stores table to the specified path
     :param index: Write row names if true, false otherwise
     :param header: Write column name if true, false otherwise
     :param table: Dataframe to be saved
+    :param table_name: "Table will be saved with this name"
     :param path: Location where the dataframe is to be stored
     :type table: pandas.core.frame.DataFrame
+    :type table_name: str
     :type index: bool
     :type header: bool
     :returns: None
     """
-    table.to_csv(path, index=index, header=header)
+    table.to_csv(os.path.join(path, table_name + ".csv"), index=index, header=header)
 
 
 def column_stat(feature_name, data):
@@ -361,7 +363,7 @@ class Transformations:
         """
         self.summary_table = summary_table
         self.data = data
-        self.features_large_outliers =[]
+        self.features_large_outliers = []
         self.features_small_outliers = []
 
     def get_features_with_large_outliers(self):
@@ -408,7 +410,7 @@ class Transformations:
         for col in cols:
             feature = self.data[col]
             upper = np.nanpercentile(feature, 75) + 1.5 * (
-                        np.nanpercentile(feature, 75) - np.nanpercentile(feature, 25))
+                    np.nanpercentile(feature, 75) - np.nanpercentile(feature, 25))
             self.data[col] = self.data[col].apply(lambda x: upper if x > upper else x)
 
     def log_transformation(self, cols):
@@ -455,6 +457,3 @@ class Transformations:
         :return: Histogram with arguments passed in the function call
         """
         sns.histplot(ax=ax, data=data, x=col, bins=bins);
-
-
-

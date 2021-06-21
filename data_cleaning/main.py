@@ -2,7 +2,7 @@
 import pandas as pd
 import os
 from data_cleaning.helper_functions import report, drop_nan_cols, Transformations, save_table
-
+# os.chdir(os.path.pardir)
 """
 Uncomment the code below to extract descriptive features from the flare and non-flare samples
 """
