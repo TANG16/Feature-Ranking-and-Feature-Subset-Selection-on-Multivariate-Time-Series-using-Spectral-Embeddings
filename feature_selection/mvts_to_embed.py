@@ -42,7 +42,7 @@ def mvts_to_df_embed(path_FL, path_NF):
 
             timeseries.append(s)
         labels.append(y)
-        embed = pie_rank.get_embed_matrix(timeseries)
+        embed = pie_rank.get_embed_vector(timeseries)
         subset_data.iloc[:,col-1] = embed
         timeseries = []
         y = []

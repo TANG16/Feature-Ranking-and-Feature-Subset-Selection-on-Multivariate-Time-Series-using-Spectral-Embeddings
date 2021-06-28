@@ -1,19 +1,23 @@
-from data_cleaning.helper_functions import Sample, save_table
-from tslearn.datasets import CachedDatasets
+from data_cleaning.helper_functions import Sample
+
 import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from dtaidistance import dtw, clustering
-from scipy.cluster.hierarchy import dendrogram, linkage
+from dtaidistance import dtw
 from matplotlib import pyplot as plt
 from sklearn.neighbors import kneighbors_graph
-import networkx as nx
-from sklearn.manifold import spectral_embedding
+
+from graspologic.embed import AdjacencySpectralEmbed
+from sklearn.cluster import SpectralClustering
+from sklearn.manifold import  SpectralEmbedding
 from sklearn.metrics import normalized_mutual_info_score,adjusted_mutual_info_score,mutual_info_score
 import scipy
 from sklearn.cluster import KMeans
 from scipy.stats import entropy
+import scipy
+from scipy.sparse import csgraph
+from numpy import linalg as LA
 
 # os.chdir(os.path.pardir)
 # print(os.getcwd())
@@ -139,7 +143,48 @@ class PIE_RANK:
 
         return files
 
-    def get_embed_matrix(self, timeseries):
+    def eigenDecomposition(self, A, plot=True, topK=5):
+        """
+        :param A: Affinity matrix
+        :param plot: plots the sorted eigen values for visual inspection
+        :return A tuple containing:
+        - the optimal number of clusters by eigengap heuristic
+        - all eigen values
+        - all eigen vectors
+
+        This method performs the eigen decomposition on a given affinity matrix,
+        following the steps recommended in the paper:
+        1. Construct the normalized affinity matrix: L = D−1/2ADˆ −1/2.
+        2. Find the eigenvalues and their associated eigen vectors
+        3. Identify the maximum gap which corresponds to the number of clusters
+        by eigengap heuristic
+
+        References:
+        https://papers.nips.cc/paper/2619-self-tuning-spectral-clustering.pdf
+        http://www.kyb.mpg.de/fileadmin/user_upload/files/publications/attachments/Luxburg07_tutorial_4488%5b0%5d.pdf
+        """
+        L = csgraph.laplacian(A, normed=True)
+        n_components = A.shape[0]
+
+        # LM parameter : Eigenvalues with largest magnitude (eigs, eigsh), that is, largest eigenvalues in
+        # the euclidean norm of complex numbers.
+        #     eigenvalues, eigenvectors = eigsh(L, k=n_components, which="LM", sigma=1.0, maxiter=5000)
+        eigenvalues, eigenvectors = LA.eig(L)
+
+        if plot:
+            plt.title('Largest eigen values of input matrix')
+            plt.scatter(np.arange(len(eigenvalues)), eigenvalues)
+            plt.grid()
+
+        # Identify the optimal number of clusters as the index corresponding
+        # to the larger gap between eigen values
+
+        index_largest_gap = np.argsort(np.diff(eigenvalues))[::-1][:topK]
+        nb_clusters = index_largest_gap + 1
+
+        return nb_clusters[0], eigenvalues, eigenvectors
+
+    def get_embed_vector(self, timeseries):
         """
         Step 1: Calculate DTW distance for a feature across all the timesteps
         Step 2: Generate K-Nearest Neighbour graph of the distance matrix
@@ -157,13 +202,17 @@ class PIE_RANK:
         ds = np.nan_to_num(ds)
         A = kneighbors_graph(ds, 5, mode='connectivity', include_self=True)
         A = 0.5 * (A + A.T)
-        adj = A.todense()
-        np.fill_diagonal(adj, 0)
-        A = scipy.sparse.csr_matrix(adj)
-        G = nx.Graph(A)
-        adj = nx.adjacency_matrix(G)
-        embed = spectral_embedding(adj, 1)
-        return embed.flatten()
+        adj = A.toarray()
+        ase = AdjacencySpectralEmbed(n_components=1)
+        embed = ase.fit_transform(adj)
+        # k,_,_ = self.eigenDecomposition(adj, plot=False)
+        # cluster = SpectralClustering(n_clusters=k).fit(adj)
+        # normzalized_adj = cluster.affinity_matrix_
+        # embedding = SpectralEmbedding(n_components=1, affinity = 'precomputed')
+        # embed = embedding.fit_transform(normzalized_adj)
+        return embed
+
+
 
     def relevance_score(self, embed, y):
         """
@@ -203,10 +252,10 @@ class PIE_RANK:
                 s = Sample("NF", file).get_data().iloc[:, col].values
                 y.append(self.mapping[file[0]])
                 timeseries.append(s)
-            embed = self.get_embed_matrix(timeseries)
+            embed = self.get_embed_vector(timeseries)
 
-            kmeans = KMeans(n_clusters=5, random_state=0).fit(embed.reshape(-1, 1))
-            embed_y = kmeans.labels_.flatten()
+
+            embed_y = KMeans(n_clusters=5).fit_predict(embed)
             y = np.array(y).flatten()
             scores[column_mapping[col]] = self.relevance_score(embed_y, y)
             timeseries = []
