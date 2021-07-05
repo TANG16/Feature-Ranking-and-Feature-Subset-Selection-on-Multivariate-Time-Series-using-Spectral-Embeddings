@@ -1,10 +1,11 @@
 from feature_selection.pie_rank import PIE_RANK
-from data_cleaning.helper_functions import Sample
+from data_cleaning.utils import Sample
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-
-# os.chdir(os.path.pardir)
+import os
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
 # print(os.getcwd())
 
 def mvts_to_df_embed(path_FL, path_NF):

@@ -1,4 +1,4 @@
-from data_cleaning.helper_functions import Sample
+from data_cleaning.utils import Sample
 
 import os
 import numpy as np
@@ -9,18 +9,18 @@ from matplotlib import pyplot as plt
 from sklearn.neighbors import kneighbors_graph
 
 from graspologic.embed import AdjacencySpectralEmbed
-from sklearn.cluster import SpectralClustering
-from sklearn.manifold import  SpectralEmbedding
-from sklearn.metrics import normalized_mutual_info_score,adjusted_mutual_info_score,mutual_info_score
-import scipy
+# from sklearn.cluster import SpectralClustering
+# from sklearn.manifold import  SpectralEmbedding, spectral_embedding
+from sklearn.metrics import mutual_info_score
+
 from sklearn.cluster import KMeans
 from scipy.stats import entropy
-import scipy
 from scipy.sparse import csgraph
 from numpy import linalg as LA
 
-# os.chdir(os.path.pardir)
-# print(os.getcwd())
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
+print(os.getcwd())
 
 
 
@@ -243,17 +243,16 @@ class PIE_RANK:
         scores = {}
         column_mapping = self.__get_column_mapping()
         for col in tqdm(range(1, 25)):
-            for file in files_flare:
+            for file in tqdm(files_flare):
                 s = Sample("FL", file).get_data().iloc[:, col].values
                 y.append(self.mapping[file[0]])
                 timeseries.append(s)
 
-            for file in files_non_flare:
+            for file in tqdm(files_non_flare):
                 s = Sample("NF", file).get_data().iloc[:, col].values
                 y.append(self.mapping[file[0]])
                 timeseries.append(s)
             embed = self.get_embed_vector(timeseries)
-
 
             embed_y = KMeans(n_clusters=5).fit_predict(embed)
             y = np.array(y).flatten()

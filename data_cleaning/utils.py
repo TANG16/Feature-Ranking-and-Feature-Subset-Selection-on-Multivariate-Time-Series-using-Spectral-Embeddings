@@ -6,11 +6,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from tqdm import tqdm
-
+from tqdm.notebook import tqdm
+from scipy.stats import kurtosis, skew
+from settings import ROOT_DIR
 plt.style.use('ggplot')
 
-# os.chdir(os.path.pardir)
+
+os.chdir(ROOT_DIR)
 path = os.getcwd()
 
 
@@ -132,6 +134,8 @@ def get_features(data):
         features.append(f'{col}_MEDIAN')
         features.append(f'{col}_MAX')
         features.append(f'{col}_STDDEV')
+        features.append(f'{col}_SKEW')
+        features.append(f'{col}_KURTOSIS')
 
     return features
 
@@ -153,7 +157,9 @@ def calculate_descriptive_features(data):
     medians = [np.median(data.loc[:, col]) for col in variates_to_calc_on]
     maxs = [np.max(data.loc[:, col]) for col in variates_to_calc_on]
     std = [np.std(data.loc[:, col]) for col in variates_to_calc_on]
-    measures = (mins, means, medians, maxs, std)
+    skewness = [skew(data.loc[:, col]) for col in variates_to_calc_on]
+    kurt = [kurtosis(data.loc[:, col]) for col in variates_to_calc_on]
+    measures = (mins, means, medians, maxs, std, skewness,kurt)
     features.loc[len(features)] = np.concatenate(measures)
 
     return features

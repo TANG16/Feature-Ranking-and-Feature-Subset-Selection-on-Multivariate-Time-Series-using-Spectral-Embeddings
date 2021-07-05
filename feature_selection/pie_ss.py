@@ -1,8 +1,10 @@
 import numpy as np
+import os
 
-# os.chdir(os.path.pardir)
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
+
 # print(os.getcwd())
-
 
 
 class Coordinate_Descent_Lasso:

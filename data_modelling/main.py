@@ -1,22 +1,22 @@
 import os
-# os.chdir(os.path.pardir)
-# print(os.getcwd())
+
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.metrics import precision_recall_fscore_support as score
 from sklearn.model_selection import StratifiedKFold
-
 from feature_selection.viz import get_selected_columns_sklearn
 import pandas as pd
 import numpy as np
-from data_cleaning.helper_functions import save_table as savee_table
-
+from data_cleaning.utils import save_table as savee_table
+from feature_selection.viz import get_selected_columns_sklearn
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
 data = pd.read_csv(os.path.join(os.getcwd(),"data","data.csv"))
 
 def scale(X):

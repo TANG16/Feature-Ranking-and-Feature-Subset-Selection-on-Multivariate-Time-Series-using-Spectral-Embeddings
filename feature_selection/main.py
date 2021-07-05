@@ -1,15 +1,17 @@
-import os
 import pandas as pd
 from feature_selection import pie_rank
-from data_cleaning.helper_functions import save_table
+from data_cleaning.utils import save_table
 from feature_selection.mvts_to_embed import mvts_to_df_embed
 from feature_selection.viz import get_x_and_y,get_selected_columns_custom,get_selected_columns_sklearn, compare_custom_sklearn,plot_coefficient_path
-# os.chdir(os.path.pardir)
-# print(os.getcwd())
+import os
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
+
 
 
 path_FL = os.path.join(os.getcwd(),"data\\partition1\\FL")
 path_NF = os.path.join(os.getcwd(),"data\\partition1\\NF")
+
 """
 PIE Ranking Algorithm
 """
@@ -54,4 +56,5 @@ coefficients = pd.DataFrame(index = data.columns[:-1])
 coefficients['Scikit-Learn'] = sklearn_coefs
 coefficients['Custom'] = custom_coefs + 0.01
 save_table(save_path, coefficients,"coefficients", index = True)
+
 

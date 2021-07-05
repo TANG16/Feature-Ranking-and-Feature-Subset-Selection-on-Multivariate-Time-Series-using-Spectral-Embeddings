@@ -1,8 +1,9 @@
-from data_cleaning.helper_functions import Sample, calculate_descriptive_features,get_features,report, drop_nan_cols, Transformations
+from data_cleaning.utils import Sample, calculate_descriptive_features,get_features,report, drop_nan_cols, Transformations
 
 import os
 import pandas as pd
-# os.chdir(os.path.pardir)
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
 path = os.getcwd()
 
 

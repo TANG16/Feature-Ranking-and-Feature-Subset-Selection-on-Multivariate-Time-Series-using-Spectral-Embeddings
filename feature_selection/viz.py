@@ -6,9 +6,9 @@ from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler
 from feature_selection.pie_ss import Coordinate_Descent_Lasso
 import matplotlib.pyplot as plt
+from settings import ROOT_DIR
+os.chdir(ROOT_DIR)
 
-# os.chdir(os.path.pardir)
-print(os.getcwd())
 
 data = pd.read_csv(os.path.join(os.getcwd(), "data", "data.csv"))
 
@@ -133,3 +133,13 @@ def plot_coefficient_path(data):
 
     plt.axis('tight')
     plt.legend(data.columns[:-1], bbox_to_anchor=(1.05, 1.05))
+
+
+def plot_scores(scores_vect,scores_embed):
+    fig,ax = plt.subplots(2,1);
+    ax[0].bar(scores_vect['Score'], scores_vect['Feature']);
+    ax[1].bar(scores_embed['Score'], scores_embed['Feature']);
+
+    ax[0].set_title('Feature Rank/Score on Vectorized data', fontweight='bold', fontsize=10);
+    ax[1].set_title('Feature Rank/Score on Embed data', fontweight='bold', fontsize=10);
+    plt.show();
