@@ -1,5 +1,5 @@
-## Feature Ranking and Feature Subset Selection on Multivariate Time Series using Spectral Embeddings
-### Setting up Project
+# Feature Ranking and Feature Subset Selection on Multivariate Time Series using Spectral Embeddings
+## Setting up Project
 
 Follow these steps to set up the project on your local machine
 
@@ -11,7 +11,7 @@ source ./my_venv/bin/activate
 (my_venv) pip3 install -r ./requirements.txt
 ```
 
-### Folder Structure
+## Folder Structure
 ```
   mvts_fss_ay
     ├───data
@@ -43,7 +43,7 @@ source ./my_venv/bin/activate
     ├─── requirements.txt
 ```
 
-### File Description
+## File Description
 * utils.py: Contains helper functions required for cleaning MTS segments and generating vectorized data
 * pie_rank.py: Feature Ranking Algorithm from the paper
 * pie_ss.py:  Coordinate Descent Solver for Lasso Regression
@@ -53,12 +53,13 @@ source ./my_venv/bin/activate
 * embed.csv: Pet Embed data generated using 1200 Flare Samples and 1254 Non-Flare Samples.
 * vectorized.csv: Pet Vectorized data generated using 1200 Flare Samples and 1254 Non-Flare Samples.
 * __init__.py: Main File.
-### Feature Selection
+
+## Feature Selection
 Run the following command to simulate the results obtained [here](https://sites.google.com/view/gsu-codesprint-2021/ay)
 ```angular2html
 python __init__.py
 ```
-##### Feature Selection Process
+#### Feature Selection Process
 ![Feature Selection Process](images/test.png)
 * On running the command above, 12 data frames are generated, each corresponding to the output of the feature selection techniques in the above diagram.
 
