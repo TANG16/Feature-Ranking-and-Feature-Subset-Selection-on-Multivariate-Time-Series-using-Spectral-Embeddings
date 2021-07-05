@@ -59,7 +59,7 @@ Run the following command to simulate the results obtained [here](https://sites.
 python __init__.py
 ```
 ##### Feature Selection Process
-![Feature Selection Process](misc/test.png)
+![Feature Selection Process](images/test.png)
 * On running the command above, 12 data frames are generated, each corresponding to the output of the feature selection techniques in the above diagram.
 
 ## Report
